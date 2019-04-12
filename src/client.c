@@ -78,9 +78,17 @@ int send_request(int fd, char *hostname, char *port, char *path)
   char request[max_request_size];
   int rv;
 
-  ///////////////////
-  // IMPLEMENT ME! //
-  ///////////////////
+  sprintf(request, "GET /%s HTTP/1.1\n"
+                   "Host: %s:%s\n"
+                   "Connection: close",
+          path, hostname, port);
+
+  rv = send(fd, request, strlen(request), 0);
+
+  if (rv == -1)
+  {
+    perror("ERROR: could not send request.");
+  }
 
   return 0;
 }
