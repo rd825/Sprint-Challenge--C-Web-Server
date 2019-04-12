@@ -114,15 +114,15 @@ int main(int argc, char *argv[])
   int rv = send_request(sockfd, urlinfo->hostname, urlinfo->port, urlinfo->path);
 
   // 4. Call `recv` in a loop until there is no more data to receive from the server. Print the received response to stdout.
-  while ((numbytes = recv(sockfd, buf, BUFSIZE - 1, 0)) != -1)
+  while ((numbytes = recv(sockfd, buf, BUFSIZE - 1, 0)) > 0)
   {
     printf("%s\n", buf);
   }
+  close(sockfd);
 
   //   5. Clean up any allocated memory and open file descriptors.
   free(urlinfo->hostname);
   free(urlinfo);
-  close(sockfd);
 
   return 0;
 }
