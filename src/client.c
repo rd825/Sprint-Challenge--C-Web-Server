@@ -28,26 +28,61 @@ typedef struct urlinfo_t
 */
 urlinfo_t *parse_url(char *url)
 {
-  // copy the input URL so as not to mutate the original
-  char *hostname = strdup(url);
+  char *hostname;
   char *port;
   char *path;
 
   urlinfo_t *urlinfo = malloc(sizeof(urlinfo_t));
 
+  // Account for https, http, or not
+  // copy the input URL so as not to mutate the original
+  if (strstr(url, "http://"))
+  {
+    hostname = strdup(url + 7);
+  }
+  else if (strstr(url, "https://"))
+  {
+    hostname = strdup(url + 8);
+  }
+  else
+  {
+    hostname = strdup(url);
+  }
+
+  // We can parse the input URL by doing the following:
+  // 1. Use strchr to find the first backslash in the URL (this is assuming there is no http:// or https:// in the URL).
+  if (strchr(hostname, '/'))
+  {
+    // 2. Set the path pointer to 1 character after the spot returned by strchr.
+    path = strchr(hostname, '/') + 1;
+    // 3. Overwrite the backslash with a '\0' so that we are no longer considering anything after the backslash.
+    *(path - 1) = '\0';
+  }
+  else
+  {
+    path = "";
+  }
+
+  if (strchr(hostname, ':'))
+  {
+    port = strchr(hostname, ':') + 1;
+    *(port - 1) = '\0';
+  }
+  else
+  {
+    // handle no port provided case
+    port = "80";
+  }
+
   /*
-    We can parse the input URL by doing the following:
-    1. Use strchr to find the first backslash in the URL (this is assuming there is no http:// or https:// in the URL).
-    2. Set the path pointer to 1 character after the spot returned by strchr.
-    3. Overwrite the backslash with a '\0' so that we are no longer considering anything after the backslash.
     4. Use strchr to find the first colon in the URL.
     5. Set the port pointer to 1 character after the spot returned by strchr.
     6. Overwrite the colon with a '\0' so that we are just left with the hostname.
   */
 
-  ///////////////////
-  // IMPLEMENT ME! //
-  ///////////////////
+  urlinfo->path = path;
+  urlinfo->port = port;
+  urlinfo->hostname = hostname;
 
   return urlinfo;
 }
